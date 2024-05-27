@@ -7,9 +7,13 @@ class GameBoard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<GameController>(
       builder: (context, controller, child) {
-        return CustomPaint(
-          size: Size(double.infinity, double.infinity),
-          painter: GameBoardPainter(controller),
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            return CustomPaint(
+              size: Size(constraints.maxWidth, constraints.maxHeight),
+              painter: GameBoardPainter(controller, constraints),
+            );
+          },
         );
       },
     );
@@ -18,7 +22,9 @@ class GameBoard extends StatelessWidget {
 
 class GameBoardPainter extends CustomPainter {
   final GameController controller;
-  GameBoardPainter(this.controller);
+  final BoxConstraints constraints;
+
+  GameBoardPainter(this.controller, this.constraints);
 
   @override
   void paint(Canvas canvas, Size size) {

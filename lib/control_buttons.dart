@@ -11,7 +11,6 @@ class ControlButtons extends StatelessWidget {
         ElevatedButton(
           onPressed: () {
             context.read<GameController>().resetGame();
-            context.read<GameController>().dropBall();
           },
           child: Text('Reset'),
         ),
