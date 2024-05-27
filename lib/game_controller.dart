@@ -12,6 +12,9 @@ class GameController with ChangeNotifier {
   bool gameOver = false;
   Timer? _timer;
 
+  final double pegRadius = 0.025; // Radius of the peg
+  final double ballRadius = 0.05; // Radius of the ball
+
   GameController() {
     _initPegs();
   }
@@ -54,33 +57,31 @@ class GameController with ChangeNotifier {
 
       // Simulate ball dropping
       ballPositions[currentBall] = Offset(
-        ballPositions[currentBall].dx,
+        ballPositions[currentBall].dx + ballVelocityX,
         ballPositions[currentBall].dy + ballVelocityY,
       );
       ballVelocityY += 0.001; // Gravity effect
 
-
       // Check for collisions with pegs
       for (var peg in pegs) {
-        if ((ballPositions[currentBall] - peg).distance < 0.05) {
-          ballVelocityX = Random().nextDouble() - 0.5;
+        if ((ballPositions[currentBall] - peg).distance < (pegRadius + ballRadius)) {
+          // Reflect the ball's horizontal velocity when hitting a peg
+          ballVelocityX = Random().nextDouble() * 0.2 - 0.1; // Random small horizontal velocity
+          ballVelocityY = 0.01; // Ensure the ball keeps falling downward
         }
       }
 
-      // Update ball position with velocity and boundary checks
-      double newBallX = ballPositions[currentBall].dx + ballVelocityX;
-      double newBallY = ballPositions[currentBall].dy;
+      // Ensure ball remains within horizontal bounds based on minX and maxX
+      double minX = pegs.map((peg) => peg.dx).reduce(min) - ballRadius;
+      double maxX = pegs.map((peg) => peg.dx).reduce(max) + ballRadius;
 
-      // Ensure ball remains within horizontal bounds
-      if (newBallX < 0) {
-        newBallX = 0;
+      if (ballPositions[currentBall].dx < minX) {
+        ballPositions[currentBall] = Offset(minX, ballPositions[currentBall].dy);
         ballVelocityX = -ballVelocityX; // Reverse direction
-      } else if (newBallX > 1) {
-        newBallX = 1;
+      } else if (ballPositions[currentBall].dx > maxX) {
+        ballPositions[currentBall] = Offset(maxX, ballPositions[currentBall].dy);
         ballVelocityX = -ballVelocityX; // Reverse direction
       }
-
-      ballPositions[currentBall] = Offset(newBallX, newBallY);
 
       // Check if ball has reached the bottom
       if (ballPositions[currentBall].dy > 1) {
@@ -104,6 +105,7 @@ class GameController with ChangeNotifier {
       startDrop();
     }
   }
+
   int calculateScore(Offset position) {
     // Placeholder logic to calculate score based on final ball position
     return (position.dx * 100).toInt();
