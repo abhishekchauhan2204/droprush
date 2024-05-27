@@ -27,16 +27,12 @@ class GameBoardPainter extends CustomPainter {
       ..strokeWidth = 4;
 
     // Draw pegs
-    for (var row = 0; row < controller.pegs.length; row++) {
-      for (var col = 0; col < controller.pegs[row].length; col++) {
-        if (controller.pegs[row][col]) {
-          final offset = Offset(
-            col * size.width / controller.pegs[row].length,
-            row * size.height / controller.pegs.length,
-          );
-          canvas.drawCircle(offset, 5, paint);
-        }
-      }
+    for (var peg in controller.pegs) {
+      final offset = Offset(
+        peg.dx * size.width,
+        peg.dy * size.height,
+      );
+      canvas.drawCircle(offset, 5, paint);
     }
 
     // Draw balls
@@ -45,7 +41,7 @@ class GameBoardPainter extends CustomPainter {
         controller.ballPositions[i].dx * size.width,
         controller.ballPositions[i].dy * size.height,
       );
-      canvas.drawCircle(ballOffset, 10, paint..color = Colors.red);
+      canvas.drawCircle(ballOffset, 10, paint..color = Colors.amber);
     }
   }
 

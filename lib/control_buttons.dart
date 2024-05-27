@@ -9,7 +9,10 @@ class ControlButtons extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
         ElevatedButton(
-          onPressed: () => context.read<GameController>().resetGame(),
+          onPressed: () {
+            context.read<GameController>().resetGame();
+            context.read<GameController>().dropBall();
+          },
           child: Text('Reset'),
         ),
         ElevatedButton(

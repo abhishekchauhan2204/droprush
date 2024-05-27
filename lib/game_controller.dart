@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 class GameController with ChangeNotifier {
-  List<List<bool>> pegs = [];
+  List<Offset> pegs = [];
   List<Offset> ballPositions = [];
   List<int> scores = [];
   int currentBall = 0;
@@ -18,13 +18,17 @@ class GameController with ChangeNotifier {
   }
 
   void _initPegs() {
-    // Initialize pegs in a triangular pattern
+    pegs.clear();
+    double rowSpacing = 0.1;
+    double colSpacing = 0.1;
+
     for (int row = 0; row < 10; row++) {
-      List<bool> pegRow = [];
-      for (int col = 0; col < row * 2 + 1; col++) {
-        pegRow.add(true);
+      int numPegs = row + 2;  // Starting with 2 pegs in the first row, increasing by 1 each row
+      for (int col = 0; col < numPegs; col++) {
+        double x = (col + 1) / (numPegs + 1);
+        double y = row * rowSpacing;
+        pegs.add(Offset(x, y));
       }
-      pegs.add(pegRow);
     }
   }
 
@@ -42,7 +46,7 @@ class GameController with ChangeNotifier {
   void startDrop() {
     if (gameOver) return;
     _timer?.cancel();
-    _timer = Timer.periodic(Duration(milliseconds: 40), (timer) {
+    _timer = Timer.periodic(Duration(milliseconds: 30), (timer) {
       if (gameOver) {
         timer.cancel();
         return;
@@ -56,15 +60,9 @@ class GameController with ChangeNotifier {
       ballVelocityY += 0.001; // Gravity effect
 
       // Check for collisions with pegs
-      for (var row = 0; row < pegs.length; row++) {
-        for (var col = 0; col < pegs[row].length; col++) {
-          final pegPosition = Offset(
-            col / pegs[row].length,
-            row / pegs.length,
-          );
-          if ((ballPositions[currentBall] - pegPosition).distance < 0.05) {
-            ballVelocityX = Random().nextDouble() - 0.5;
-          }
+      for (var peg in pegs) {
+        if ((ballPositions[currentBall] - peg).distance < 0.05) {
+          ballVelocityX = Random().nextDouble() - 0.5;
         }
       }
 
