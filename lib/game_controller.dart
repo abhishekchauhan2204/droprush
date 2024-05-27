@@ -59,6 +59,7 @@ class GameController with ChangeNotifier {
       );
       ballVelocityY += 0.001; // Gravity effect
 
+
       // Check for collisions with pegs
       for (var peg in pegs) {
         if ((ballPositions[currentBall] - peg).distance < 0.05) {
@@ -66,10 +67,20 @@ class GameController with ChangeNotifier {
         }
       }
 
-      ballPositions[currentBall] = Offset(
-        ballPositions[currentBall].dx + ballVelocityX,
-        ballPositions[currentBall].dy,
-      );
+      // Update ball position with velocity and boundary checks
+      double newBallX = ballPositions[currentBall].dx + ballVelocityX;
+      double newBallY = ballPositions[currentBall].dy;
+
+      // Ensure ball remains within horizontal bounds
+      if (newBallX < 0) {
+        newBallX = 0;
+        ballVelocityX = -ballVelocityX; // Reverse direction
+      } else if (newBallX > 1) {
+        newBallX = 1;
+        ballVelocityX = -ballVelocityX; // Reverse direction
+      }
+
+      ballPositions[currentBall] = Offset(newBallX, newBallY);
 
       // Check if ball has reached the bottom
       if (ballPositions[currentBall].dy > 1) {
@@ -93,7 +104,6 @@ class GameController with ChangeNotifier {
       startDrop();
     }
   }
-
   int calculateScore(Offset position) {
     // Placeholder logic to calculate score based on final ball position
     return (position.dx * 100).toInt();
