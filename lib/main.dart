@@ -18,15 +18,16 @@ class MyApp extends StatelessWidget {
         title: 'Ball Drop Game',
         theme: ThemeData.dark(),
         home: Scaffold(
-          appBar: AppBar(
-            title: Text('Ball Drop Game'),
-          ),
-          body: Column(
-            children: [
-              Expanded(child: GameBoard()),
-              ScoreDisplay(),
-              ControlButtons(),
-            ],
+          
+          body: SafeArea(
+            child: Column(
+              children: [ ScoreDisplay(),
+                ControlButtons(),
+                Expanded(child:
+                GameBoard()),
+            
+              ],
+            ),
           ),
         ),
       ),
