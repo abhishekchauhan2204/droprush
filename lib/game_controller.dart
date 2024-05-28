@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 class GameController with ChangeNotifier {
   List<Offset> pegs = [];
-  List<Offset> ballPositions = List.generate(20, (_) => Offset(0.5, 0));
+  List<Offset> ballPositions = List.generate(20, (_) => Offset(0.5, -0.1)); // Start from a bit higher
   List<int> scores = List.generate(20, (_) => 0);
   int currentBall = 0;
   double ballVelocityY = 0.01;
@@ -14,6 +14,9 @@ class GameController with ChangeNotifier {
 
   final double pegRadius = 0.025; // Radius of the peg
   final double ballRadius = 0.05; // Radius of the ball
+
+  List<double> minXPerRow = [];
+  List<double> maxXPerRow = [];
 
   GameController() {
     _initPegs();
@@ -33,11 +36,15 @@ class GameController with ChangeNotifier {
         double x = startingX + col * pegSpacing;
         pegs.add(Offset(x, rowYOffset));
       }
+
+      // Store the boundaries for each row
+      minXPerRow.add(startingX);
+      maxXPerRow.add(startingX + (numPegs - 1) * pegSpacing);
     }
   }
 
   void resetGame() {
-    ballPositions = List.generate(20, (_) => Offset(0.5, 0));
+    ballPositions = List.generate(20, (_) => Offset(0.5, -0.1)); // Start from a bit higher
     scores = List.generate(20, (_) => 0);
     currentBall = 0;
     ballVelocityY = 0.01;
@@ -71,16 +78,20 @@ class GameController with ChangeNotifier {
         }
       }
 
-      // Ensure ball remains within horizontal bounds based on minX and maxX
-      double minX = pegs.map((peg) => peg.dx).reduce(min) - ballRadius;
-      double maxX = pegs.map((peg) => peg.dx).reduce(max) + ballRadius;
+      // Ensure ball remains within horizontal bounds based on the outermost pegs for the current row
+      int currentRow = (ballPositions[currentBall].dy / 0.1).floor();
+      if (currentRow < minXPerRow.length) {
 
-      if (ballPositions[currentBall].dx < minX) {
-        ballPositions[currentBall] = Offset(minX, ballPositions[currentBall].dy);
-        ballVelocityX = -ballVelocityX; // Reverse direction
-      } else if (ballPositions[currentBall].dx > maxX) {
-        ballPositions[currentBall] = Offset(maxX, ballPositions[currentBall].dy);
-        ballVelocityX = -ballVelocityX; // Reverse direction
+        double minX = minXPerRow[currentRow] - ballRadius;
+        double maxX = maxXPerRow[currentRow] + ballRadius;
+
+        if (ballPositions[currentBall].dx < minX) {
+          ballPositions[currentBall] = Offset(minX, ballPositions[currentBall].dy);
+          ballVelocityX = -ballVelocityX; // Reverse direction
+        } else if (ballPositions[currentBall].dx > maxX) {
+          ballPositions[currentBall] = Offset(maxX, ballPositions[currentBall].dy);
+          ballVelocityX = -ballVelocityX; // Reverse direction
+        }
       }
 
       // Check if ball has reached the bottom
