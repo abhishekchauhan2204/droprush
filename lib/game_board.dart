@@ -47,7 +47,7 @@ class GameBoardPainter extends CustomPainter {
         controller.ballPositions[i].dx * size.width,
         controller.ballPositions[i].dy * size.height,
       );
-      canvas.drawCircle(ballOffset, 10, paint..color = Colors.amber);
+      canvas.drawCircle(ballOffset, 8, paint..color = Colors.amber);
     }
   }
 

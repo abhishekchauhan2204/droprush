@@ -56,7 +56,7 @@ class GameController with ChangeNotifier {
 
   void startDrop() {
     _timer?.cancel();
-    _timer = Timer.periodic(Duration(milliseconds: 30), (timer) {
+    _timer = Timer.periodic(Duration(milliseconds: 100), (timer) {
       if (gameOver) {
         timer.cancel();
         return;
